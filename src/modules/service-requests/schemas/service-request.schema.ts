@@ -26,6 +26,11 @@ export class ServiceRequest {
   @Prop({ type: Object, default: {} })
   payload: Record<string, unknown>;
 
+  // Staff-facing note the guest can see (e.g. "уборка через 20 минут" when marking a
+  // cleaning request in-progress) — separate from `payload`, which is guest-authored.
+  @Prop({ default: '' })
+  adminComment: string;
+
   // Notification tracking: true from creation (the guest just made it, nothing to notify
   // about yet) — flipped to false whenever an admin changes `status`, and back to true
   // once the guest opens the Notifications page. Powers the guide-frontend's unread badge.

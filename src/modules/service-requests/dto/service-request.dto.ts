@@ -1,4 +1,4 @@
-import { IsEnum, IsObject, IsOptional } from 'class-validator';
+import { IsEnum, IsObject, IsOptional, IsString } from 'class-validator';
 import { ServiceRequestStatus, ServiceRequestType } from '../../../common/enums';
 
 export class CreateServiceRequestDto {
@@ -13,4 +13,9 @@ export class CreateServiceRequestDto {
 export class UpdateServiceRequestStatusDto {
   @IsEnum(ServiceRequestStatus)
   status: ServiceRequestStatus;
+}
+
+export class UpdateServiceRequestCommentDto {
+  @IsString()
+  comment: string;
 }

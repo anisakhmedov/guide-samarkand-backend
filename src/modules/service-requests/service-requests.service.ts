@@ -39,6 +39,17 @@ export class ServiceRequestsService {
     return request;
   }
 
+  async setComment(id: string, comment: string) {
+    const request = await this.model.findById(id);
+    if (!request) throw new NotFoundException('Service request not found');
+    request.adminComment = comment;
+    // A new/edited comment is worth resurfacing to the guest even if they'd already
+    // seen this request (e.g. the comment was added after the status was set).
+    request.seenByGuest = false;
+    await request.save();
+    return request;
+  }
+
   /** Guest opened the Notifications page — clears their unread-request badge. */
   markSeenByGuest(guestId: string) {
     return this.model.updateMany(
