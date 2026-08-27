@@ -10,5 +10,6 @@ import { GuestsModule } from '../guests/guests.module';
   imports: [MongooseModule.forFeature([{ name: ServiceRequest.name, schema: ServiceRequestSchema }]), GuestsModule],
   controllers: [ServiceRequestsController, ServiceRequestsAdminController],
   providers: [ServiceRequestsService],
+  exports: [ServiceRequestsService],
 })
 export class ServiceRequestsModule {}

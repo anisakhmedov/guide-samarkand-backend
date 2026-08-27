@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { ServiceRequestsService } from './service-requests.service';
 import { CreateServiceRequestDto } from './dto/service-request.dto';
 import { GuestAccessGuard } from '../guests/guards/guest-access.guard';
@@ -19,5 +19,10 @@ export class ServiceRequestsController {
   @Get('mine')
   findMine(@CurrentGuest() user: { guestId: string }) {
     return this.requests.findAllByGuest(user.guestId);
+  }
+
+  @Patch('mark-seen')
+  markSeen(@CurrentGuest() user: { guestId: string }) {
+    return this.requests.markSeenByGuest(user.guestId);
   }
 }

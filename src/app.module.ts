@@ -16,6 +16,7 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { ServiceRequestsModule } from './modules/service-requests/service-requests.module';
 import { WeatherModule } from './modules/weather/weather.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { WeatherModule } from './modules/weather/weather.module';
     MenuModule,
     ServiceRequestsModule,
     WeatherModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

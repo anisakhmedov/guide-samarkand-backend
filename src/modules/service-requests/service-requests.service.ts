@@ -32,7 +32,27 @@ export class ServiceRequestsService {
     const request = await this.model.findById(id);
     if (!request) throw new NotFoundException('Service request not found');
     request.status = status;
+    // An admin-driven status change is exactly the event the guest's notification
+    // badge should surface — mark it unseen again even if it was seen before.
+    request.seenByGuest = false;
     await request.save();
     return request;
+  }
+
+  /** Guest opened the Notifications page — clears their unread-request badge. */
+  markSeenByGuest(guestId: string) {
+    return this.model.updateMany(
+      { guestId: new Types.ObjectId(guestId), seenByGuest: false },
+      { $set: { seenByGuest: true } },
+    );
+  }
+
+  countUnseenByGuest(guestId: string) {
+    return this.model.countDocuments({ guestId: new Types.ObjectId(guestId), seenByGuest: false });
+  }
+
+  /** Admin-side notification badge: requests nobody has actioned yet. */
+  countNew() {
+    return this.model.countDocuments({ status: ServiceRequestStatus.NEW });
   }
 }

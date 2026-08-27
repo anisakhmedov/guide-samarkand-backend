@@ -26,6 +26,12 @@ export class ServiceRequest {
   @Prop({ type: Object, default: {} })
   payload: Record<string, unknown>;
 
+  // Notification tracking: true from creation (the guest just made it, nothing to notify
+  // about yet) — flipped to false whenever an admin changes `status`, and back to true
+  // once the guest opens the Notifications page. Powers the guide-frontend's unread badge.
+  @Prop({ default: true })
+  seenByGuest: boolean;
+
   createdAt?: Date;
   updatedAt?: Date;
 }

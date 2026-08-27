@@ -62,4 +62,14 @@ export class ChatService {
       { $set: { readStatus: true } },
     );
   }
+
+  /**
+   * Notification badge count: unread messages sent by `fromSender`. Admin passes just
+   * GUEST (unread across every conversation); a guest passes ADMIN + their own guestId.
+   */
+  countUnread(fromSender: ChatSender, guestId?: string) {
+    const query: Record<string, unknown> = { sender: fromSender, readStatus: false };
+    if (guestId) query.guestId = new Types.ObjectId(guestId);
+    return this.model.countDocuments(query);
+  }
 }
