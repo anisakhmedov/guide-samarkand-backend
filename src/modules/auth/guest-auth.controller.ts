@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { GuestsService } from '../guests/guests.service';
@@ -32,12 +32,25 @@ export class GuestAuthController {
         statusResidence: guest.statusResidence,
         statusReview: guest.statusReview,
         accessStatus: guest.accessStatus,
+        discountStatus: guest.discountStatus,
       },
-      reviewLinks: {
-        google: this.config.get('reviewLinks.google'),
-        yandex: this.config.get('reviewLinks.yandex'),
-        twoGis: this.config.get('reviewLinks.twoGis'),
-      },
+      reviewLinks: this.reviewLinksPayload(),
+    };
+  }
+
+  // Public — reviewLinks aren't sensitive, and the guest app needs them again on the
+  // Options "leave a review" page independently of the one-time /enter response (e.g.
+  // after a page reload, long after the gate flow finished).
+  @Get('review-links')
+  reviewLinks() {
+    return this.reviewLinksPayload();
+  }
+
+  private reviewLinksPayload() {
+    return {
+      google: this.config.get('reviewLinks.google'),
+      yandex: this.config.get('reviewLinks.yandex'),
+      twoGis: this.config.get('reviewLinks.twoGis'),
     };
   }
 }

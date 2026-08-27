@@ -56,3 +56,30 @@ export enum AdminRole {
   RECEPTION = 'reception',
   CONTENT_MANAGER = 'content_manager',
 }
+
+export enum DiscountStatus {
+  NONE = 'none',
+  PENDING = 'pending',
+  APPROVED = 'approved',
+}
+
+export enum MenuItemType {
+  FOOD = 'food',
+  DRINK = 'drink',
+}
+
+export enum ServiceRequestType {
+  FOOD_ORDER = 'food_order',
+  DRINK_ORDER = 'drink_order',
+  WAKE_UP = 'wake_up',
+  CLEANING = 'cleaning',
+  PROBLEM = 'problem',
+  EXTENSION = 'extension',
+}
+
+export enum ServiceRequestStatus {
+  NEW = 'new',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done',
+  REJECTED = 'rejected',
+}

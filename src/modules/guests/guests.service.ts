@@ -3,12 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 import { Guest, GuestDocument } from './schemas/guest.schema';
-import { AccessStatus, ResidenceStatus, ReviewStatus } from '../../common/enums';
+import { AccessStatus, DiscountStatus, ResidenceStatus, ReviewStatus } from '../../common/enums';
 
 export interface GuestFilter {
   residence?: ResidenceStatus;
   review?: ReviewStatus;
   access?: AccessStatus;
+  discount?: DiscountStatus;
   search?: string;
 }
 
@@ -59,6 +60,7 @@ export class GuestsService {
     if (filter.residence) query.statusResidence = filter.residence;
     if (filter.review) query.statusReview = filter.review;
     if (filter.access) query.accessStatus = filter.access;
+    if (filter.discount) query.discountStatus = filter.discount;
     if (filter.search) {
       const re = new RegExp(escapeRegex(filter.search), 'i');
       query.$or = [{ name: re }, { roomNumber: re }];
@@ -78,11 +80,24 @@ export class GuestsService {
     return this.updateWithHistory(id, { accessStatus: status }, `access:${status}`, admin);
   }
 
+  async setDiscountStatus(id: string, status: DiscountStatus, admin: { id: string; name: string }) {
+    return this.updateWithHistory(id, { discountStatus: status }, `discount:${status}`, admin);
+  }
+
   /** Guest self-service: mark that they submitted their review for admin verification. */
   async markReviewSubmitted(id: string) {
     const guest = await this.findById(id);
     guest.statusReview = ReviewStatus.PENDING;
     guest.history.push({ action: 'review:submitted_by_guest', at: new Date() } as any);
+    await guest.save();
+    return guest;
+  }
+
+  /** Guest self-service: mark that they submitted an in-app review for the Options discount. */
+  async markDiscountSubmitted(id: string) {
+    const guest = await this.findById(id);
+    guest.discountStatus = DiscountStatus.PENDING;
+    guest.history.push({ action: 'discount:submitted_by_guest', at: new Date() } as any);
     await guest.save();
     return guest;
   }

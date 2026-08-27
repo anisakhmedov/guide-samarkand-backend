@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { AccessStatus, ResidenceStatus, ReviewStatus } from '../../../common/enums';
+import { AccessStatus, DiscountStatus, ResidenceStatus, ReviewStatus } from '../../../common/enums';
 
 export type GuestDocument = Guest & Document;
 
@@ -36,6 +36,12 @@ export class Guest {
 
   @Prop({ type: String, enum: AccessStatus, default: AccessStatus.CLOSED })
   accessStatus: AccessStatus;
+
+  // In-app "Options -> Leave a review" discount flow (separate from the mandatory gate
+  // review above): guest self-reports, admin verifies in the "Гости" panel before any
+  // discounted pricing applies — mirrors statusReview's trust model.
+  @Prop({ type: String, enum: DiscountStatus, default: DiscountStatus.NONE })
+  discountStatus: DiscountStatus;
 
   @Prop({ required: true, unique: true })
   deviceSessionToken: string;

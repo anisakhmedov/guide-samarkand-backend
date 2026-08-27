@@ -19,6 +19,7 @@ export class GuestSelfController {
       statusResidence: guest.statusResidence,
       statusReview: guest.statusReview,
       accessStatus: guest.accessStatus,
+      discountStatus: guest.discountStatus,
     };
   }
 
@@ -26,5 +27,11 @@ export class GuestSelfController {
   @Patch('me/review-submitted')
   async markReviewSubmitted(@CurrentGuest() user: { guestId: string }) {
     return this.guests.markReviewSubmitted(user.guestId);
+  }
+
+  // "Options -> Leave a review" discount flow: separate from the mandatory gate review above.
+  @Patch('me/discount-submitted')
+  async markDiscountSubmitted(@CurrentGuest() user: { guestId: string }) {
+    return this.guests.markDiscountSubmitted(user.guestId);
   }
 }

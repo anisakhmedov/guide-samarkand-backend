@@ -33,5 +33,11 @@ export default () => ({
     twoGis: process.env.REVIEW_LINK_2GIS || '',
   },
 
+  // Options -> weather forecast, via Open-Meteo (free, no API key). Defaults to Samarkand.
+  weather: {
+    lat: parseFloat(process.env.WEATHER_LAT || '39.6542'),
+    lng: parseFloat(process.env.WEATHER_LNG || '66.9597'),
+  },
+
   storageDriver: process.env.STORAGE_DRIVER || 'local',
 });

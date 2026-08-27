@@ -10,9 +10,13 @@ import { Guest, GuestSchema } from '../modules/guests/schemas/guest.schema';
 import { Place, PlaceSchema } from '../modules/places/schemas/place.schema';
 import { Route, RouteSchema } from '../modules/routes/schemas/route.schema';
 import { AdminUser, AdminUserSchema } from '../modules/admin-users/schemas/admin-user.schema';
+import { MenuItem, MenuItemSchema } from '../modules/menu/schemas/menu-item.schema';
+import { HotelSettings, HotelSettingsSchema } from '../modules/settings/schemas/hotel-settings.schema';
 import {
   AccessStatus,
   AdminRole,
+  DiscountStatus,
+  MenuItemType,
   PlaceCategory,
   ResidenceStatus,
   ReviewStatus,
@@ -31,6 +35,8 @@ async function main() {
   const PlaceModel = mongoose.model(Place.name, PlaceSchema);
   const RouteModel = mongoose.model(Route.name, RouteSchema);
   const AdminUserModel = mongoose.model(AdminUser.name, AdminUserSchema);
+  const MenuItemModel = mongoose.model(MenuItem.name, MenuItemSchema);
+  const HotelSettingsModel = mongoose.model(HotelSettings.name, HotelSettingsSchema);
 
   // ---- Staff accounts ----
   const superLogin = process.env.SEED_SUPERADMIN_LOGIN || 'admin';
@@ -208,6 +214,28 @@ async function main() {
     placeDocs[p.name] = doc;
   }
 
+  // ---- Hotel settings (Options discount %) ----
+  if (!(await HotelSettingsModel.findOne())) {
+    await HotelSettingsModel.create({ discountPercent: 10 });
+    console.log('Created hotel settings: discountPercent=10');
+  }
+
+  // ---- Room-service menu (Options -> Food / Drinks) ----
+  const menuData = [
+    { type: MenuItemType.FOOD, name: 'Плов по-самаркандски', description: 'Классический плов с бараниной и айвой', price: 65000 },
+    { type: MenuItemType.FOOD, name: 'Шурпа', description: 'Наваристый суп с бараниной и овощами', price: 45000 },
+    { type: MenuItemType.FOOD, name: 'Самса', description: 'Слоёная самса с мясом, порция 2 шт.', price: 25000 },
+    { type: MenuItemType.DRINK, name: 'Зелёный чай', description: 'Чайник, 0.5 л', price: 15000 },
+    { type: MenuItemType.DRINK, name: 'Свежевыжатый сок', description: 'Гранат или апельсин, 0.3 л', price: 30000 },
+    { type: MenuItemType.DRINK, name: 'Вино местное', description: 'Бокал, самаркандское красное', price: 40000 },
+  ];
+  for (const m of menuData) {
+    if (!(await MenuItemModel.findOne({ name: m.name }))) {
+      await MenuItemModel.create(m);
+      console.log(`Created menu item: ${m.name}`);
+    }
+  }
+
   // ---- Admin route: history walk ----
   if (!(await RouteModel.findOne({ title: 'Классический маршрут по центру' }))) {
     const stops = ['Регистан', 'Гур-Эмир', 'Биби-Ханым', 'Шахи-Зинда'];
@@ -240,10 +268,11 @@ async function main() {
       statusResidence: ResidenceStatus.APPROVED,
       statusReview: ReviewStatus.APPROVED,
       accessStatus: AccessStatus.OPEN,
+      discountStatus: DiscountStatus.APPROVED,
       deviceSessionToken: uuid(),
       history: [{ action: 'seeded:fully_approved', at: new Date() }],
     });
-    console.log('Created demo guest with full access: name="Demo Guest", room="101"');
+    console.log('Created demo guest with full access + Options discount: name="Demo Guest", room="101"');
   }
 
   if (!(await GuestModel.findOne({ name: 'Pending Guest', roomNumber: '202' }))) {

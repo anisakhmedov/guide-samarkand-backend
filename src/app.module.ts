@@ -12,6 +12,10 @@ import { RoutesModule } from './modules/routes/routes.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { MenuModule } from './modules/menu/menu.module';
+import { ServiceRequestsModule } from './modules/service-requests/service-requests.module';
+import { WeatherModule } from './modules/weather/weather.module';
 
 @Module({
   imports: [
@@ -29,6 +33,10 @@ import { UploadModule } from './modules/upload/upload.module';
     ChatModule,
     FeedbackModule,
     UploadModule,
+    SettingsModule,
+    MenuModule,
+    ServiceRequestsModule,
+    WeatherModule,
   ],
 })
 export class AppModule {}

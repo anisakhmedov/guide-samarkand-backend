@@ -1,11 +1,16 @@
 import { Body, Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
 import { GuestsService } from './guests.service';
-import { UpdateAccessStatusDto, UpdateResidenceStatusDto, UpdateReviewStatusDto } from './dto/update-status.dto';
+import {
+  UpdateAccessStatusDto,
+  UpdateDiscountStatusDto,
+  UpdateResidenceStatusDto,
+  UpdateReviewStatusDto,
+} from './dto/update-status.dto';
 import { AdminJwtGuard } from '../../common/guards/admin-jwt.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentAdmin } from '../../common/decorators/current-admin.decorator';
-import { AccessStatus, AdminRole, ResidenceStatus, ReviewStatus } from '../../common/enums';
+import { AccessStatus, AdminRole, DiscountStatus, ResidenceStatus, ReviewStatus } from '../../common/enums';
 
 // Admin "Гости" section (PLAN.md "Админ-панель" -> "Гости"). Reception + super-admin.
 @Controller('admin/guests')
@@ -19,9 +24,10 @@ export class GuestsController {
     @Query('residence') residence?: ResidenceStatus,
     @Query('review') review?: ReviewStatus,
     @Query('access') access?: AccessStatus,
+    @Query('discount') discount?: DiscountStatus,
     @Query('search') search?: string,
   ) {
-    return this.guests.findAll({ residence, review, access, search });
+    return this.guests.findAll({ residence, review, access, discount, search });
   }
 
   @Get(':id')
@@ -54,5 +60,14 @@ export class GuestsController {
     @CurrentAdmin() admin: { adminId: string; name: string },
   ) {
     return this.guests.setAccessStatus(id, dto.status, { id: admin.adminId, name: admin.name });
+  }
+
+  @Patch(':id/discount')
+  setDiscount(
+    @Param('id') id: string,
+    @Body() dto: UpdateDiscountStatusDto,
+    @CurrentAdmin() admin: { adminId: string; name: string },
+  ) {
+    return this.guests.setDiscountStatus(id, dto.status, { id: admin.adminId, name: admin.name });
   }
 }

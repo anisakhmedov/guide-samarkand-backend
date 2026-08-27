@@ -1,5 +1,5 @@
 import { IsEnum } from 'class-validator';
-import { AccessStatus, ResidenceStatus, ReviewStatus } from '../../../common/enums';
+import { AccessStatus, DiscountStatus, ResidenceStatus, ReviewStatus } from '../../../common/enums';
 
 export class UpdateResidenceStatusDto {
   @IsEnum(ResidenceStatus)
@@ -14,4 +14,9 @@ export class UpdateReviewStatusDto {
 export class UpdateAccessStatusDto {
   @IsEnum(AccessStatus)
   status: AccessStatus;
+}
+
+export class UpdateDiscountStatusDto {
+  @IsEnum(DiscountStatus)
+  status: DiscountStatus;
 }
