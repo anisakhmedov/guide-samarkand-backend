@@ -56,21 +56,46 @@ export class MenuService {
 
   // ---- Guest-facing (Options -> Food / Drinks) ----
 
-  /** Active items for the given type, with discountedPrice applied if hasDiscount. */
+  /** 
+   * Active items for the given type, with markup and discount applied.
+   * Logic:
+   * 1. Apply global markup% to base price
+   * 2. If hasDiscount:
+   *    - If item has explicit discountedPrice: apply markup% to it
+   *    - Otherwise: apply discount% to marked-up price
+   */
   async findAllActive(type: MenuItemType | undefined, hasDiscount: boolean): Promise<MenuItemWithPrice[]> {
     const query: Record<string, unknown> = { active: true };
     if (type) query.type = type;
     const items = await this.model.find(query).sort({ name: 1 }).exec();
-    const percent = hasDiscount ? await this.settings.discountPercent() : 0;
+    const markup = await this.settings.markupPercent();
+    const discount = hasDiscount ? await this.settings.discountPercent() : 0;
 
-    return items.map((item) => ({
-      _id: String(item._id),
-      type: item.type,
-      name: item.name,
-      description: item.description,
-      price: item.price,
-      discountedPrice: Math.round(item.price * (1 - percent / 100)),
-      photo: item.photo,
-    }));
+    return items.map((item) => {
+      // Apply markup to base price
+      const priceWithMarkup = Math.round(item.price * (1 + markup / 100));
+      
+      // Determine final price
+      let finalPrice = priceWithMarkup;
+      if (hasDiscount) {
+        if (item.discountedPrice > 0) {
+          // Use explicit discounted price with markup applied
+          finalPrice = Math.round(item.discountedPrice * (1 + markup / 100));
+        } else {
+          // Calculate discounted price from marked-up base
+          finalPrice = Math.round(priceWithMarkup * (1 - discount / 100));
+        }
+      }
+
+      return {
+        _id: String(item._id),
+        type: item.type,
+        name: item.name,
+        description: item.description,
+        price: priceWithMarkup,
+        discountedPrice: finalPrice,
+        photo: item.photo,
+      };
+    });
   }
 }

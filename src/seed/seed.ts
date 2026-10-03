@@ -214,10 +214,15 @@ async function main() {
     placeDocs[p.name] = doc;
   }
 
-  // ---- Hotel settings (Options discount %) ----
-  if (!(await HotelSettingsModel.findOne())) {
-    await HotelSettingsModel.create({ discountPercent: 10 });
-    console.log('Created hotel settings: discountPercent=10');
+  // ---- Hotel settings (Options discount % and global markup %) ----
+  const settings = await HotelSettingsModel.findOne();
+  if (!settings) {
+    await HotelSettingsModel.create({ discountPercent: 10, markupPercent: 10 });
+    console.log('Created hotel settings: discountPercent=10, markupPercent=10');
+  } else if (settings.markupPercent === undefined) {
+    settings.markupPercent = 10;
+    await settings.save();
+    console.log('Updated hotel settings: added markupPercent=10');
   }
 
   // ---- Room-service menu (Options -> Food / Drinks) ----

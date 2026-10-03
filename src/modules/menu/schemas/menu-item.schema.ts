@@ -4,9 +4,9 @@ import { MenuItemType } from '../../../common/enums';
 
 export type MenuItemDocument = MenuItem & Document;
 
-// Room-service menu (Options -> "Питание в номера" / "Напитки с бара"). Prices are set here
-// by the admin; the guest-facing price shown is discounted per-request for guests whose
-// discountStatus is approved (see SettingsService.discountPercent, MenuService.findAllActive).
+// Room-service menu (Options -> "Питание в номера" / "Напитки с бара").
+// Price: base menu item price
+// discountedPrice: explicit price for guests with discountStatus === approved (if set, used instead of auto-calculated)
 @Schema({ timestamps: true })
 export class MenuItem {
   @Prop({ type: String, enum: MenuItemType, required: true })
@@ -20,6 +20,9 @@ export class MenuItem {
 
   @Prop({ required: true, min: 0 })
   price: number;
+
+  @Prop({ default: 0, min: 0 })
+  discountedPrice: number;
 
   @Prop({ default: '' })
   photo: string;

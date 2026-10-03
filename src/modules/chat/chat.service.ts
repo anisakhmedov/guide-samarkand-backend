@@ -12,8 +12,12 @@ export class ChatService {
     return this.model.create({ guestId: new Types.ObjectId(guestId), sender, text, photo });
   }
 
-  async findByGuest(guestId: string) {
-    return this.model.find({ guestId: new Types.ObjectId(guestId) }).sort({ timestamp: 1 });
+  /** Full history, or only messages newer than `after` (ISO date) for cheap incremental polling. */
+  async findByGuest(guestId: string, after?: string) {
+    const query: Record<string, unknown> = { guestId: new Types.ObjectId(guestId) };
+    const since = after ? new Date(after) : null;
+    if (since && !isNaN(+since)) query.timestamp = { $gt: since };
+    return this.model.find(query).sort({ timestamp: 1 }).lean();
   }
 
   /** Admin dashboard conversation list: one row per guest with last message + unread-from-guest count. */

@@ -75,6 +75,7 @@ export enum ServiceRequestType {
   CLEANING = 'cleaning',
   PROBLEM = 'problem',
   EXTENSION = 'extension',
+  HOOKAH = 'hookah',
 }
 
 export enum ServiceRequestStatus {
@@ -83,3 +84,16 @@ export enum ServiceRequestStatus {
   DONE = 'done',
   REJECTED = 'rejected',
 }
+
+// Messengers/socials a guest can be contacted through (registration form).
+export enum ContactChannel {
+  TELEGRAM = 'telegram',
+  WHATSAPP = 'whatsapp',
+  INSTAGRAM = 'instagram',
+  WECHAT = 'wechat',
+  VIBER = 'viber',
+  OTHER = 'other',
+}
+
+// Channels reachable by the phone number itself — username is optional for them.
+export const PHONE_BASED_CHANNELS: ContactChannel[] = [ContactChannel.WHATSAPP, ContactChannel.VIBER];

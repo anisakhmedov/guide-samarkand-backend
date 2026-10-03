@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { IsOptional, IsString } from 'class-validator';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
@@ -30,8 +30,8 @@ export class ChatAdminController {
   }
 
   @Get(':guestId/messages')
-  history(@Param('guestId') guestId: string) {
-    return this.chat.findByGuest(guestId);
+  history(@Param('guestId') guestId: string, @Query('after') after?: string) {
+    return this.chat.findByGuest(guestId, after);
   }
 
   @Post(':guestId/messages')

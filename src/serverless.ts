@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import express from 'express';
@@ -15,7 +15,8 @@ const server = express();
 let appReady: Promise<unknown> | null = null;
 
 async function createApp() {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), { cors: false });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, new ExpressAdapter(server), { cors: false });
+  app.useBodyParser('json', { limit: '2mb' });
   const config = app.get(ConfigService);
 
   app.enableCors({

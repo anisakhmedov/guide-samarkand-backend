@@ -26,3 +26,6 @@ export class ChatMessage {
 
 export const ChatMessageSchema = SchemaFactory.createForClass(ChatMessage);
 ChatMessageSchema.index({ guestId: 1, timestamp: 1 });
+// Conversation list aggregation ($sort by timestamp first) and unread badge counters.
+ChatMessageSchema.index({ timestamp: -1 });
+ChatMessageSchema.index({ sender: 1, readStatus: 1 });

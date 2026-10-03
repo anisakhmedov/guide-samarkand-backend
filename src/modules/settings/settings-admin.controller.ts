@@ -6,7 +6,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminRole } from '../../common/enums';
 
-// Admin "Настройки" section — currently just the Options discount percentage.
+// Admin "Настройки" section — discount/markup percentages and the hookah price.
 @Controller('admin/settings')
 @UseGuards(AdminJwtGuard, RolesGuard)
 @Roles(AdminRole.SUPER_ADMIN)

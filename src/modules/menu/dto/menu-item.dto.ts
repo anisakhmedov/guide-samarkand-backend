@@ -17,6 +17,11 @@ export class CreateMenuItemDto {
   price: number;
 
   @IsOptional()
+  @IsNumber()
+  @Min(0)
+  discountedPrice?: number;
+
+  @IsOptional()
   @IsString()
   photo?: string;
 
@@ -42,6 +47,11 @@ export class UpdateMenuItemDto {
   @IsNumber()
   @Min(0)
   price?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  discountedPrice?: number;
 
   @IsOptional()
   @IsString()

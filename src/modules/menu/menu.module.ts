@@ -11,5 +11,6 @@ import { GuestsModule } from '../guests/guests.module';
   imports: [MongooseModule.forFeature([{ name: MenuItem.name, schema: MenuItemSchema }]), SettingsModule, GuestsModule],
   controllers: [MenuAdminController, MenuController],
   providers: [MenuService],
+  exports: [MenuService],
 })
 export class MenuModule {}

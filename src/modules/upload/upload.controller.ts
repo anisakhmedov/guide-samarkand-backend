@@ -19,7 +19,7 @@ const IS_BLOB = process.env.STORAGE_DRIVER === 'vercel-blob';
 const storage = IS_BLOB
   ? memoryStorage()
   : diskStorage({
-      destination: join(__dirname, '..', '..', '..', 'uploads'),
+      destination: process.env.UPLOADS_DIR || join(__dirname, '..', '..', '..', 'uploads'),
       filename: (_req, file, cb) => cb(null, `${uuid()}${extname(file.originalname)}`),
     });
 

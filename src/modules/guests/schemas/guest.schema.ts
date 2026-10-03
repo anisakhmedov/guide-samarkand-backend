@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { AccessStatus, DiscountStatus, ResidenceStatus, ReviewStatus } from '../../../common/enums';
+import { AccessStatus, ContactChannel, DiscountStatus, ResidenceStatus, ReviewStatus } from '../../../common/enums';
 
 export type GuestDocument = Guest & Document;
 
@@ -20,6 +20,16 @@ export class GuestHistoryEntry {
 }
 const GuestHistoryEntrySchema = SchemaFactory.createForClass(GuestHistoryEntry);
 
+@Schema({ _id: false })
+export class GuestContact {
+  @Prop({ type: String, enum: ContactChannel, required: true })
+  type: ContactChannel;
+
+  @Prop({ default: '', trim: true })
+  value: string;
+}
+const GuestContactSchema = SchemaFactory.createForClass(GuestContact);
+
 @Schema({ timestamps: { createdAt: true, updatedAt: true } })
 export class Guest {
   @Prop({ required: true, trim: true })
@@ -27,6 +37,14 @@ export class Guest {
 
   @Prop({ required: true, trim: true })
   roomNumber: string;
+
+  // Not `required` at DB level so guests registered before this field existed stay valid;
+  // the gate DTO enforces it for every new registration / re-entry.
+  @Prop({ default: '', trim: true })
+  phone: string;
+
+  @Prop({ type: [GuestContactSchema], default: [] })
+  contacts: GuestContact[];
 
   @Prop({ type: String, enum: ResidenceStatus, default: ResidenceStatus.PENDING })
   statusResidence: ResidenceStatus;
@@ -43,7 +61,25 @@ export class Guest {
   @Prop({ type: String, enum: DiscountStatus, default: DiscountStatus.NONE })
   discountStatus: DiscountStatus;
 
-  @Prop({ required: true, unique: true })
+  // Registration step 2 (after name/room/phone): residence country (ISO 3166-1 alpha-2)
+  // and date of birth (YYYY-MM-DD, kept as a plain date — no timezone shifts).
+  @Prop({ default: '' })
+  country: string;
+
+  @Prop({ default: '' })
+  birthDate: string;
+
+  // Registration step 3: house rules accepted + handwritten signature (PNG data URL).
+  // The signature is only loaded for the admin guest card (select: false keeps it out of
+  // lists and the guest's own /guest/me payload).
+  @Prop({ type: Date, default: null })
+  rulesAcceptedAt: Date | null;
+
+  @Prop({ default: '', select: false })
+  rulesSignature: string;
+
+  // select: false — internal device credential, never sent to the admin panel.
+  @Prop({ required: true, unique: true, select: false })
   deviceSessionToken: string;
 
   @Prop({ type: [GuestHistoryEntrySchema], default: [] })
@@ -56,3 +92,8 @@ export class Guest {
 export const GuestSchema = SchemaFactory.createForClass(Guest);
 // Fast lookup for the "same name+room already approved" re-entry flow (see PLAN.md open questions).
 GuestSchema.index({ name: 1, roomNumber: 1 });
+// Admin bell counters (countDocuments on each status) + the default list sort.
+GuestSchema.index({ statusResidence: 1 });
+GuestSchema.index({ statusReview: 1 });
+GuestSchema.index({ discountStatus: 1 });
+GuestSchema.index({ createdAt: -1 });

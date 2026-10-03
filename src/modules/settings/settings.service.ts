@@ -27,4 +27,9 @@ export class SettingsService {
     const settings = await this.get();
     return settings.discountPercent;
   }
+
+  async markupPercent(): Promise<number> {
+    const settings = await this.get();
+    return settings.markupPercent;
+  }
 }

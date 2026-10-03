@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { GuestsService } from '../guests/guests.service';
+import { GuestsService, toGuestMe } from '../guests/guests.service';
 import { EnterGateDto } from '../guests/dto/enter-gate.dto';
 
-// Public gate: name + room number, no password/SMS (see PLAN.md "Доступ и авторизация гостей").
+// Public gate: name + room number + phone/messenger contacts, no password/SMS (see PLAN.md "Доступ и авторизация гостей").
 @Controller('auth/guest')
 export class GuestAuthController {
   constructor(
@@ -15,7 +15,7 @@ export class GuestAuthController {
 
   @Post('enter')
   async enter(@Body() dto: EnterGateDto) {
-    const guest = await this.guests.findOrCreateOnGate(dto.name, dto.roomNumber);
+    const guest = await this.guests.findOrCreateOnGate(dto.name, dto.roomNumber, dto.phone, dto.contacts);
     const token = this.jwt.sign(
       { guestId: guest._id.toString() },
       {
@@ -25,15 +25,7 @@ export class GuestAuthController {
     );
     return {
       token,
-      guest: {
-        id: guest._id,
-        name: guest.name,
-        roomNumber: guest.roomNumber,
-        statusResidence: guest.statusResidence,
-        statusReview: guest.statusReview,
-        accessStatus: guest.accessStatus,
-        discountStatus: guest.discountStatus,
-      },
+      guest: toGuestMe(guest),
       reviewLinks: this.reviewLinksPayload(),
     };
   }
