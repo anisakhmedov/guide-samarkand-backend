@@ -1,0 +1,6 @@
+import{c,j as n}from"./index-9goiwBfJ.js";/**
+ * @license lucide-react v1.31.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const i=[["path",{d:"m21 21-4.34-4.34",key:"14j7rj"}],["circle",{cx:"11",cy:"11",r:"8",key:"4ej97u"}]],d=c("search",i),u={approved:"green",open:"green",done:"green",rejected:"red",closed:"red",pending:"orange",new:"orange",in_progress:"blue",not_sent:"",none:""};function g({value:e,label:r}){return n.jsxs("span",{className:`badge ${u[e]??""}`,children:[n.jsx("span",{className:"dot"}),r??e]})}function m({options:e,current:r,onSelect:a}){return n.jsx("div",{className:"btn-row",children:e.filter(([t])=>t!==r).map(([t,s])=>n.jsx("button",{className:"btn small secondary",onClick:o=>{o.stopPropagation(),a(t)},children:s},t))})}function p(e){return`${Math.round(e||0).toLocaleString("ru-RU")} сум`}function h(e){return new Date(e).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}function j({value:e,onChange:r,placeholder:a}){return n.jsxs("div",{className:"search-box",children:[n.jsx(d,{size:16}),n.jsx("input",{className:"input",type:"search",placeholder:a,value:e,onChange:t=>r(t.target.value)})]})}export{m as A,j as S,g as a,h as b,p as f};
